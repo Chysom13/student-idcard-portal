@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import supabase from '../services/supabase';
@@ -6,22 +6,72 @@ import supabase from '../services/supabase';
 const CapturePhoto = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    // Refs for Native Implementation
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+
+    // Ref for React-Webcam Implementation
     const webcamRef = useRef(null);
 
     const [preview, setPreview] = useState(null);
     const [capturing, setCapturing] = useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [useNative, setUseNative] = useState(false); // Primary: react-webcam
+    const [cameraActive, setCameraActive] = useState(false);
+
+    // Initialize Native Camera
+    useEffect(() => {
+        let stream = null;
+        if (useNative && !preview) {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(s => {
+                    stream = s;
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = stream;
+                        setCameraActive(true);
+                    }
+                })
+                .catch(err => {
+                    console.error("Native camera failed:", err);
+                    setUseNative(false); // Fallback to React-Webcam
+                });
+        }
+
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [useNative, preview]);
 
     const handleCapture = () => {
-        const imageSrc = webcamRef.current.getScreenshot();
-        if (imageSrc) {
-            setPreview(imageSrc);
+        if (useNative) {
+            // Capture from Video Element to Canvas
+            const video = videoRef.current;
+            const canvas = canvasRef.current;
+            if (video && canvas) {
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageSrc = canvas.toDataURL('image/jpeg');
+                setPreview(imageSrc);
+                setCameraActive(false);
+            }
+        } else {
+            // Capture from React-Webcam
+            const imageSrc = webcamRef.current.getScreenshot();
+            if (imageSrc) {
+                setPreview(imageSrc);
+            }
         }
     };
 
     const handleRetake = () => {
         setPreview(null);
         setErrorMsg(null);
+        if (useNative) setCameraActive(true);
     };
 
     const handleUpload = async () => {
@@ -89,13 +139,27 @@ const CapturePhoto = () => {
 
                 {!preview ? (
                     <>
-                        <Webcam
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            width="100%"
-                            videoConstraints={{ facingMode: "user" }}
-                            style={{ borderRadius: "4px", marginBottom: "15px" }}
-                        />
+                        {useNative ? (
+                            <div style={{ position: 'relative', width: '100%', marginBottom: '15px' }}>
+                                <video
+                                    ref={videoRef}
+                                    autoPlay
+                                    playsInline
+                                    muted
+                                    style={{ width: "100%", borderRadius: "4px", backgroundColor: '#000' }}
+                                />
+                                <canvas ref={canvasRef} style={{ display: 'none' }} />
+                                {!cameraActive && <p style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white' }}>Initializing Camera...</p>}
+                            </div>
+                        ) : (
+                            <Webcam
+                                ref={webcamRef}
+                                screenshotFormat="image/jpeg"
+                                width="100%"
+                                videoConstraints={{ facingMode: "user" }}
+                                style={{ borderRadius: "4px", marginBottom: "15px" }}
+                            />
+                        )}
                         <button
                             onClick={handleCapture}
                             style={{ padding: "12px 24px", fontSize: "16px", cursor: "pointer", borderRadius: "8px", backgroundColor: "#007bff", color: "white", border: "none", width: "100%" }}
@@ -130,6 +194,7 @@ const CapturePhoto = () => {
                         {errorMsg}
                     </div>
                 )}
+
 
             </div>
         </div>

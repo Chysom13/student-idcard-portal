@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../services/supabase';
+import GlobalLimitControl from '../components/GlobalLimitControl';
+import ExhaustedStudents from '../components/ExhaustedStudents';
+import StudentMonitor from '../components/StudentMonitor';
 
 const AdminDashboard = ({ onLogout }) => {
-    const [query, setQuery] = useState('');
-    const [student, setStudent] = useState(null);
-    const [searching, setSearching] = useState(false);
-    const [resetting, setResetting] = useState(false);
-    const [searchError, setSearchError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
     const navigate = useNavigate();
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [currentView, setCurrentView] = useState('menu'); // 'menu', 'global', 'exhausted', 'monitor'
+    const [exhaustedCount, setExhaustedCount] = useState(0);
 
     // Guard: redirect to home if not authenticated
     useEffect(() => {
@@ -18,209 +18,171 @@ const AdminDashboard = ({ onLogout }) => {
         }
     }, [navigate]);
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        setSearching(true);
-        setStudent(null);
-        setSearchError('');
-        setSuccessMsg('');
+    // Fetch exhausted count for the badge
+    useEffect(() => {
+        const fetchExhaustedCount = async () => {
+            const { data, error } = await supabase
+                .from('students')
+                .select('print_count, print_limit');
+                
+            if (!error && data) {
+                const count = data.filter(s => (s.print_count || 0) >= (s.print_limit || 3)).length;
+                setExhaustedCount(count);
+            }
+        };
 
-        const { data, error } = await supabase
-            .from('students')
-            .select('id, name, matric_number, level, has_printed, last_printed_level')
-            .eq('matric_number', query.trim())
-            .single();
-
-        setSearching(false);
-
-        if (error || !data) {
-            setSearchError('No student found with that Matric Number. Please double-check and try again.');
-        } else {
-            setStudent(data);
+        // Fetch when on the menu, or when refresh is triggered
+        if (currentView === 'menu') {
+            fetchExhaustedCount();
         }
+    }, [currentView, refreshTrigger]);
+
+    const handleRefresh = () => {
+        setRefreshTrigger(prev => prev + 1);
     };
 
-    const handleResetPrintLock = async () => {
-        if (!student) return;
-        setResetting(true);
-        setSuccessMsg('');
-
-        const { error } = await supabase
-            .from('students')
-            .update({ has_printed: false, last_printed_level: null })
-            .eq('id', student.id);
-
-        setResetting(false);
-
-        if (!error) {
-            setStudent(prev => ({ ...prev, has_printed: false, last_printed_level: null }));
-            setSuccessMsg(`✅ Print lock has been successfully reset for ${student.name}. They can now reprint their ID card.`);
-        } else {
-            setSuccessMsg('❌ Failed to reset the print lock. Please try again.');
-        }
+    const handleBack = () => {
+        setCurrentView('menu');
+        handleRefresh(); // Ensure badge updates when returning to menu
     };
 
-    const isPrintLocked = student?.has_printed || student?.last_printed_level === student?.level;
+    // --- RENDER MENU ---
+    const renderMenu = () => (
+        <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '24px',
+            marginTop: '20px',
+            color: 'white'
+        }}>
+            {/* Global Limit Control Card */}
+            <div 
+                onClick={() => setCurrentView('global')}
+                style={{
+                    background: '#1a1a2e', 
+                    borderRadius: '16px',
+                    padding: '32px 24px',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    border: '1px solid #2a2a4a',
+                    transition: 'transform 0.2s ease, background 0.2s ease',
+                    textAlign: 'center'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#22223b'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#1a1a2e'}
+            >
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌐</div>
+                <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>Global Limit Control</h3>
+                <p style={{ margin: 0, fontSize: '14px' }}>Set uniform print limits across the entire system.</p>
+            </div>
+
+            {/* Exhausted Limits Queue Card */}
+            <div 
+                onClick={() => setCurrentView('exhausted')}
+                style={{
+                    background: '#2b1b3d', 
+                    borderRadius: '16px',
+                    padding: '32px 24px',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    border: '1px solid #3d2b4f',
+                    transition: 'transform 0.2s ease, background 0.2s ease',
+                    textAlign: 'center',
+                    position: 'relative'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#322147'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#2b1b3d'}
+            >
+                {exhaustedCount > 0 && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '20px',
+                        right: '20px',
+                        background: '#e53e3e',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        padding: '4px 12px',
+                        borderRadius: '999px',
+                        boxShadow: '0 2px 8px rgba(229, 62, 62, 0.5)'
+                    }}>
+                        {exhaustedCount} Action{exhaustedCount !== 1 ? 's' : ''} Needed
+                    </div>
+                )}
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🛑</div>
+                <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>Exhausted Limits</h3>
+                <p style={{ margin: 0, fontSize: '14px' }}>Manage students who have hit their max prints.</p>
+            </div>
+
+            {/* Global Student Monitor Card */}
+            <div 
+                onClick={() => setCurrentView('monitor')}
+                style={{
+                    background: '#0a2540', 
+                    borderRadius: '16px',
+                    padding: '32px 24px',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    border: '1px solid #1c3d5a',
+                    transition: 'transform 0.2s ease, background 0.2s ease',
+                    textAlign: 'center'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#0e3153'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#0a2540'}
+            >
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📊</div>
+                <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>Student Monitor</h3>
+                <p style={{ margin: 0, fontSize: '14px'}}>Search and view all student print statistics.</p>
+            </div>
+        </div>
+    );
 
     return (
-        <div style={{ minHeight: '60vh', background: '#f4f7fb' }}>
-            {/* Header
-            <div style={{
-                background: 'linear-gradient(135deg, #12bca2, #6d15df)',
-                padding: '16px 32px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
-            }}>
-                <div>
-                    <h1 style={{ color: 'white', margin: 0, fontSize: '20px', fontWeight: 800 }}>Admin Dashboard</h1>
-                    <p style={{ color: 'rgba(255,255,255,0.75)', margin: 0, fontSize: '13px' }}>Mountain Top University · ID System</p>
-                </div>
-            </div> */}
-
-            {/* Body */}
-            <div style={{ maxWidth: '680px', margin: '48px auto', padding: '0 20px' }}>
-                <div style={{
-                    background: '#2a0660',
-                    color: 'white',
-                    borderRadius: '16px',
-                    padding: '36px',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
+        <div style={{ minHeight: '100vh', padding: '40px 20px'}}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                
+                {/* Header Area */}
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    marginBottom: '32px',
+                    borderBottom: '1px solid #333',
+                    paddingBottom: '20px',
+                    flexWrap: 'wrap',
+                    gap: '20px'
                 }}>
-                    <div style={{
-                        margin: '0 0 28px 0',
-                        textAlign: 'center'
-                    }}>
-                        <h1 style={{ fontSize: '25px', fontWeight: 800, textDecoration: 'underline' }}>Admin Dashboard</h1>
-                        <p style={{ fontSize: '13px' }}>Mountain Top University · ID System</p>
+                    <div>
+                        <h1 style={{ fontSize: 'min(7vw, 28px)', fontWeight: 800, margin: '0 0 8px' }}>
+                            Admin Dashboard
+                        </h1>
+                        <p style={{ fontSize: '14px', margin: 0, opacity: 0.8 }}>
+                            Mountain Top University · ID System Command Center
+                        </p>
                     </div>
-                    <h2 style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: 500 }}>Reset Print Lock</h2>
-                    <p style={{ margin: '0 0 28px', fontSize: '14px' }}>
-                        Search for a student by their Matric Number to view their print status and reset the lock if needed.
-                    </p>
-
-                    {/* Search */}
-                    <form onSubmit={handleSearch} style={{ background: '#2a0660', marginBottom: '28px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-                        <input
-                            type="text"
-                            value={query}
-                            onChange={(e) => { setQuery(e.target.value); setSearchError(''); }}
-                            placeholder="Enter Matric Number (e.g. MTU/20/1234)"
-                            required
-                            style={{
-                                flex: 1,
-                                padding: '12px 16px',
-                                fontSize: '14px',
-                                background: '#1e0446ff',
-                                color: 'white',
-                                border: '2px solid #444',
-                                borderRadius: '8px',
-                                outline: 'none',
-                                boxSizing: 'border-box',
-                            }}
-                        />
-                        <button
-                            type="submit"
-                            disabled={searching}
-                            style={{
-                                padding: '10px 24px',
-                                background: '#12bca2',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                fontWeight: 700,
-                                fontSize: '14px',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                opacity: searching ? 0.7 : 1,
-                            }}
-                        >
-                            {searching ? 'Searching...' : 'Search'}
-                        </button>
-                    </form>
-
-                    {/* Error from search */}
-                    {searchError && (
-                        <div style={{ padding: '14px', background: '#fff3f3', border: '1px solid #fca5a5', borderRadius: '8px', color: '#b91c1c', fontSize: '14px', marginBottom: '20px' }}>
-                            {searchError}
-                        </div>
-                    )}
-
-                    {/* Student Result Card */}
-                    {student && (
-                        <div style={{
-                            border: '2px solid #e8e8f0',
-                            borderRadius: '12px',
-                            padding: '24px',
-                            background: 'black',
-                            color: 'white'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                                <div>
-                                    <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontWeight: 800 }}>{student.name}</h3>
-                                    <p style={{ margin: '0 0 2px', fontSize: '14px' }}><strong>Matric No:</strong> {student.matric_number}</p>
-                                    <p style={{ margin: '0 0 2px', fontSize: '14px' }}><strong>Current Level:</strong> {student.level}</p>
-                                    <p style={{ margin: '0 0 2px', fontSize: '14px' }}><strong>Last Printed Level:</strong> {student.last_printed_level || 'Never printed'}</p>
-                                </div>
-
-                                <div style={{
-                                    padding: '8px 14px',
-                                    borderRadius: '999px',
-                                    fontWeight: 700,
-                                    fontSize: '13px',
-                                    background: isPrintLocked ? '#fff3cd' : '#d1fae5',
-                                    color: isPrintLocked ? '#856404' : '#065f46',
-                                    border: isPrintLocked ? '1px solid #ffd970' : '1px solid #6ee7b7',
-                                }}>
-                                    {isPrintLocked ? '🔒 Print Locked' : '✅ Can Print'}
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div style={{ marginTop: '20px', borderTop: '1px solid #e8e8f0', paddingTop: '20px' }}>
-                                {isPrintLocked ? (
-                                    <button
-                                        onClick={handleResetPrintLock}
-                                        disabled={resetting}
-                                        style={{
-                                            padding: '12px 24px',
-                                            background: '#e53935',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '8px',
-                                            fontWeight: 700,
-                                            fontSize: '14px',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        {resetting ? 'Resetting...' : '🔓 Reset Print Lock'}
-                                    </button>
-                                ) : (
-                                    <p style={{ color: '#0a8f69ff', fontWeight: 600, fontSize: '14px', margin: 0 }}>
-                                        This student is currently eligible to print their ID card. No action needed.
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Success / Error message */}
-                            {successMsg && (
-                                <div style={{
-                                    marginTop: '16px',
-                                    padding: '14px',
-                                    background: successMsg.startsWith('✅') ? '#d1fae5' : '#fff3f3',
-                                    border: `1px solid ${successMsg.startsWith('✅') ? '#6ee7b7' : '#fca5a5'}`,
-                                    borderRadius: '8px',
-                                    color: successMsg.startsWith('✅') ? '#065f46' : '#b91c1c',
-                                    fontSize: '14px',
-                                    fontWeight: 500,
-                                }}>
-                                    {successMsg}
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
+
+                {/* Dashboard View Switching */}
+                {currentView === 'menu' && renderMenu()}
+
+                {currentView === 'global' && (
+                    <div style={{ minHeight: '400px' }}>
+                        <GlobalLimitControl onUpdateSuccess={handleRefresh} onBack={handleBack} />
+                    </div>
+                )}
+
+                {currentView === 'exhausted' && (
+                    <div style={{ minHeight: '600px', maxHeight: '800px' }}>
+                        <ExhaustedStudents refreshTrigger={refreshTrigger} onBack={handleBack} />
+                    </div>
+                )}
+
+                {currentView === 'monitor' && (
+                    <div style={{ height: '700px' }}>
+                        <StudentMonitor refreshTrigger={refreshTrigger} onBack={handleBack} />
+                    </div>
+                )}
+
             </div>
         </div>
     );

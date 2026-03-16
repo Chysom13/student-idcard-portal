@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Link } from "react-router-dom";
 
 // pages
 import Home from "./pages/Home";
@@ -25,16 +25,10 @@ function Layout() {
   return (
     <>
       {/* Nav Bar - darkens when admin session is active */}
-      <nav style={{
+      <nav className="main-nav" style={{
         background: isAdminSession
-          ? "#2a0660"
+          ? "#0a0a0a"
           : "#12bca2",
-        transition: "background 0.4s ease",
-        display: "flex",
-        justifyContent: "space-between",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "30px 0",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <h1>MTU One ID Portal</h1>
@@ -55,27 +49,33 @@ function Layout() {
         </div>
 
         {isAdminSession ? (
-          <button
-            onClick={() => {
-              sessionStorage.removeItem('admin_session');
-              setIsAdminSession(false);
-              navigate('/');
-            }}
-            style={{
-              background: 'rgba(255,255,255,0.15)',
-              color: 'white',
-              border: '1px solid rgba(255,255,255,0.3)',
-              borderRadius: '8px',
-              padding: '8px 18px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-              margin: '10px, 0, 0, 0'
-            }}
-          >
-            Logout
-          </button>
-        ) : undefined}
+  <button
+    onClick={() => {
+      sessionStorage.removeItem('admin_session');
+      setIsAdminSession(false);
+      navigate('/');
+    }}
+    style={{
+      background: 'rgba(255,255,255,0.15)',
+      color: 'white',
+      border: '1px solid rgba(255,255,255,0.3)',
+      borderRadius: '8px',
+      padding: '8px 18px',
+      cursor: 'pointer',
+      fontSize: '14px',
+      fontWeight: 600,
+      margin: '10px 0 0 0'
+    }}
+  >
+    Logout
+  </button>
+) : (
+  <Link
+    to="/"
+  >
+    Student Search
+  </Link>
+  )}
       </nav>
 
       {/* Page Content */}

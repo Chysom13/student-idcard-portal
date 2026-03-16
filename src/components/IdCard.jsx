@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import Barcode from 'react-barcode';
 
 const IdCard = ({ student }) => {
-
+  const [barcodeError, setBarcodeError] = useState(false);
   const barcodeValue = `${student.name}|${student.matric_number}`;
+
+  // Primary: Orca Scan API URL
+  const barcodeApiUrl = `https://api.orcascan.com/barcode/code128?data=${encodeURIComponent(barcodeValue)}`;
 
   return (
     <div className="id-card-container">
@@ -48,15 +52,23 @@ const IdCard = ({ student }) => {
           </div>
 
           <div className="id-card-footer">
-            <Barcode
-              value={barcodeValue}
-              width={1}
-              height={25}
-              displayValue={false}
-              background="transparent"
-              lineColor="#000"
-              margin={0}
-            />
+            {!barcodeError ? (
+              <Barcode
+                value={barcodeValue}
+                width={1}
+                height={25}
+                displayValue={false}
+                background="transparent"
+                lineColor="#000"
+                margin={0}
+              />
+            ) : (
+              <img
+                src={barcodeApiUrl}
+                alt="Student Barcode"
+                style={{ height: '25px', maxWidth: '100px' }}
+              />
+            )}
             <div className="id-card-validity">
               <p>Valid till: 2025</p>
             </div>
@@ -67,4 +79,4 @@ const IdCard = ({ student }) => {
   );
 };
 
-export default IdCard
+export default IdCard;

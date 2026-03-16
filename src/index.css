@@ -25,12 +25,6 @@ body {
   background: #f2f2f2;
 }
 
-nav {
-  background: var(--primary);
-  padding: 10px 20px;
-  text-align: center;
-  border-radius: 0 0 2rem 2rem;
-}
 
 nav a {
   color: #f2f2f2;
@@ -48,11 +42,83 @@ nav h1 {
   padding: 20px;
 }
 
+@media (max-width: 768px) {
+  .page {
+    padding: 15px;
+    margin: 10px auto;
+  }
+}
+
+/* Responsive Navigation */
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  transition: all 0.3s ease;
+  border-radius: 0 0 2rem 2rem;
+}
+
+@media (max-width: 600px) {
+  .main-nav {
+    flex-direction: column;
+    padding: 20px 15px;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .main-nav h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ID Card Responsive Wrapper */
+.id-card-responsive-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 20px 0;
+  position: relative;
+  /* height: min-content; */
+}
+
+.id-card-scaler {
+  transform-origin: center top;
+  transition: transform 0.2s ease-out;
+  position: absolute;
+  /* bottom: -50%; */
+}
+
+@media (max-width: 580px) {
+  .id-card-scaler {
+    transform: scale(0.65);
+
+  }
+  
+
+  .id-card-responsive-wrapper {
+    height: max-content;
+    /* Approximate scaled height to prevent gap */
+  }
+}
+
+@media (max-width: 400px) {
+  .id-card-scaler {
+    transform: scale(0.55);
+  }
+
+  .id-card-responsive-wrapper {
+    height: 220px;
+  }
+}
+
 .smoothie-grid {
   margin-top: 40px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .smoothie-card {
@@ -62,7 +128,7 @@ nav h1 {
   box-sizing: border-box;
   border-radius: 6px;
   position: relative;
-  height: 15rem;
+  min-height: 15rem;
 }
 
 .smoothie-card:hover {
@@ -329,11 +395,6 @@ form .error {
   padding-bottom: 4px;
 }
 
-.id-detail-row:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
 
 .id-label {
   width: 35%;

@@ -42,7 +42,7 @@ const Home = () => {
   return (
     <div className="page home" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', flexDirection: 'column' }}>
       <h2>Student Portal</h2>
-      <p style={{ marginBottom: "20px" }}>Enter your Matriculation Number to view or print your ID card.</p>
+      <p style={{ marginBottom: "20px", textAlign: 'center' }}>Enter your Matriculation Number to view or print your ID card.</p>
 
       <form onSubmit={handleSearch} style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '400px' }}>
         <input
