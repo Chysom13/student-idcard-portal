@@ -694,7 +694,7 @@ form .error {
   white-space: nowrap;
 }
 
-.verify-container.loading {
+.verify-container.loading .error{
   padding: 60px;
   display: flex;
   flex-direction: column;
