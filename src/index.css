@@ -721,6 +721,7 @@ form .error {
   padding: 60px;
   text-align: center;
   margin: 10% auto;
+  border: 1px solid red;
 }
 
 .error-icon {
