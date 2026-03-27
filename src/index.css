@@ -720,12 +720,13 @@ form .error {
 .verify-container.error {
   padding: 60px;
   text-align: center;
+  margin: 10% auto;
 }
 
 .error-icon {
   font-size: 48px;
   margin-bottom: 20px;
-  margin: 10% auto;
+  
 }
 
 .back-btn {
