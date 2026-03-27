@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom"
 import supabase from "../services/supabase"
 
 const VerifyStudent = () => {
-  const { matricNumber } = useParams()
+  const { token } = useParams()
   const [student, setStudent] = useState(null)
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
@@ -13,26 +13,26 @@ const VerifyStudent = () => {
     const fetchVerificationData = async () => {
       setLoading(true)
       try {
-        // Fetch Student
+        // Fetch Student using unguessable UUID token
         const { data: studentData, error: studentError } = await supabase
           .from("students")
           .select("*")
-          .eq("matric_number", matricNumber)
+          .eq("id", token)
           .single()
 
         if (studentError || !studentData) {
-          setError("Invalid student record or matric number not found.")
+          setError("Invalid or expired verification token.")
           setLoading(false)
           return
         }
 
         setStudent(studentData)
 
-        // Fetch Courses
+        // Fetch Courses using the securely retrieved matric_number
         const { data: coursesData } = await supabase
           .from("enrolled_courses")
           .select("*")
-          .eq("matric_number", matricNumber)
+          .eq("matric_number", studentData.matric_number)
 
         setCourses(coursesData || [])
       } catch (err) {
@@ -43,7 +43,7 @@ const VerifyStudent = () => {
     }
 
     fetchVerificationData()
-  }, [matricNumber])
+  }, [token])
 
   if (loading) {
     return (

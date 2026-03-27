@@ -1,76 +1,118 @@
-# MTU One ID Portal (v3 — Interactive & Verified)
+# 🎓 MTU One ID Portal
 
-A state-of-the-art, self-service Student Identity Card management system for Mountain Top University. This project allows students to capture photos, manage their digital IDs in a 3D interactive environment, and provides a live, scannable verification portal for security and administration.
+A self-service Student Identity Card portal for **Mountain Top University (MTU)**. Students can look up their records, capture a profile photo, and download a professionally formatted ID card as a PDF — all from a single interface.
 
 ---
 
 ## ✨ v3 Core Features
 
-### 🎓 Student Portal
-- **3D Interactive ID Card**: Immersive, flippable ID card (CR80 standard) using CSS 3D transforms. Click to flip and view the back face.
-- **QR-Based Verification**: The back face features a functional QR code that leads directly to a live student verification record.
-- **Course Enrollment Tracking**: Automatically fetches and displays registered courses and unit loads on both the ID card and verification page.
-- **Standardized PDF Printing**: Optimized `react-to-pdf` configuration that generates 2-page PDFs perfectly sized (85.6mm x 54mm) for PVC card printers.
-- **Self-Service Photo Capture**: Guided webcam capture with real-time preview and Supabase storage upload.
+### Student Portal
+- **Matric Number Search** — Students enter their matriculation number to retrieve their record. Invalid numbers are caught with a clear error message.
+- **Webcam Photo Capture** — If a student has no photo on record, they are directed to a guided webcam capture page with strict instructions (white backdrop, no hats, direct eye contact).
+- **Digital ID Card** — A horizontal CR80-format identity card displaying the student's name, matric number, course, level, and a barcode.
+- **PDF Download** — Students can download their ID card as a PDF directly from the browser.
 
-### 🛡️ Admin Command Center
-- **Menu-Driven Dashboard**: Modular interface with isolated views for institutional management.
-- **Student Monitoring**: Searchable list of all students with live print statistics and enrollment data.
-- **Global Limit Control**: Authority to set institutional print caps with a single action.
-- **Exhausted Students Queue**: Smart monitoring of students who have reached their issuance limits, with manual "+1" or "Full Reset" overrides.
+### Print Control (Level-Based)
+- A student can only print their ID card **once per academic level**.
+- The system tracks this using two Supabase columns: `has_printed` (boolean) and `last_printed_level` (text).
+- If a student's level changes (e.g., 200L → 300L), the print button is **automatically re-enabled**.
+- If the levels still match, the button stays locked with a friendly notice.
+
+### Admin Dashboard
+- Accessible via a floating 🔐 button at the bottom-right corner of every page.
+- Password-protected login modal (configurable via `.env`).
+- Admins can **search for any student by Matric Number** and view their current print status.
+- A **"Reset Print Lock"** button allows admins to manually re-enable printing (e.g., for lost cards).
+- The nav bar transitions to a **dark purple admin theme** when the admin session is active.
 
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend**: React.js, React Router v6.
-- **Backend/Database**: Supabase (PostgreSQL) for student and course data.
-- **Storage**: Supabase Storage for student profile photos.
-- **Visuals**: `qrcode.react` (2D scanning), CSS 3D (flip mechanics), Vanilla CSS (fluid responsiveness).
-- **PDF Engine**: `react-to-pdf` (Hardware-accurate CR80 scaling).
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, React Router DOM |
+| Styling | Vanilla CSS |
+| Camera | `react-webcam` |
+| PDF Generation | `react-to-pdf` |
+| Barcode | `react-barcode` |
+| Backend / Database | Supabase (PostgreSQL + Storage) |
 
 ---
 
-## ⚙️ Setup & Installation
+## 🗃️ Database Schema
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Chysom13/student-id-portal.git
-   cd student-id-portal
-   ```
+Table: **`students`**
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+| Column | Type | Description |
+|---|---|---|
+| `id` | uuid | Primary key |
+| `name` | text | Full name |
+| `matric_number` | text | Unique matriculation number |
+| `department` | text | Course / Department |
+| `level` | text | Current academic level (e.g. `200 Level`) |
+| `college` | text | College name |
+| `photo_url` | text | Public URL of student photo in Supabase Storage |
+| `has_printed` | boolean | Whether the card is currently locked (default: `false`) |
+| `last_printed_level` | text | The academic level at which the card was last printed |
 
-3. **Environment Variables:**
-   Create a `.env` file in the root directory:
-   ```env
-   REACT_APP_SUPABASE_URL=your_project_url
-   REACT_APP_SUPABASE_ANON_KEY=your_anon_key
-   REACT_APP_ADMIN_PASS=your_admin_password
-   ```
-
-4. **Database Schema:**
-   The portal requires three core tables in Supabase:
-   - `students`: Core profile data and print metrics.
-   - `courses`: Master list of university courses.
-   - `enrolled_courses`: Joint table mapping students to their current registrations.
-
-5. **Start Development:**
-   ```bash
-   npm start
-   ```
+**Supabase Storage Bucket:** `student-photos`
 
 ---
 
-## 📘 Project Architecture
-- `src/pages`: Home, DisplayCard (Digital ID), VerifyStudent (Public Portal), AdminDashboard.
-- `src/components`: IdCard (3D Logic), StudentMonitor, ExhaustedStudents, CapturePhoto.
-- `src/services`: Supabase initialization and data hooks.
-- `brain`: Architectural logs and implementation plans.
+## ⚙️ Environment Variables
+
+Create a `.env` file in the project root with the following:
+
+```env
+REACT_APP_SUPABASE_URL=your_supabase_project_url
+REACT_APP_ANON_KEY=your_supabase_anon_key
+REACT_APP_ADMIN_PASS=your_admin_password
+```
+
+> ⚠️ **Important:** Change `REACT_APP_ADMIN_PASS` to a strong, unique password before deploying to production.
 
 ---
 
-## 👨‍💻 Author
-Custom-built for Mountain Top University (MTU) Student Identity Management.
+## 🚀 Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+```
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   └── IdCard.jsx          # Horizontal CR80 ID Card component
+├── pages/
+│   ├── Home.jsx            # Matric number search page
+│   ├── CapturePhoto.jsx    # Webcam photo capture flow
+│   ├── DisplayCard.jsx     # ID card view & PDF download
+│   ├── AdminLogin.jsx      # Admin password modal
+│   └── AdminDashboard.jsx  # Admin control panel
+├── services/
+│   └── supabase.js         # Supabase client instance
+├── App.jsx                 # Routes & global layout
+└── index.css               # Global styles & ID card CSS
+```
+
+---
+
+## 🔒 Security Notes
+
+- The admin password is stored client-side via an environment variable. This is suitable for an internal/intranet tool but should be replaced with **Supabase Auth** for a production-grade deployment.
+- The Supabase Anon Key only has Row-Level Security (RLS) access. Ensure your Supabase policies are configured correctly to limit student data exposure.
+
+---
+
+## 📄 License
+
+This project was built for academic purposes at Mountain Top University.

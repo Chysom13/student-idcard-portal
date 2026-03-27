@@ -242,7 +242,7 @@ const DisplayCard = () => {
         {/* Temporary Preview Button for Development */}
         <div style={{ marginTop: "15px" }}>
           <Link 
-            to={`/verify/${card.matric_number}`}
+            to={`/verify/${card.id}`}
             style={{ 
               fontSize: "13px", 
               color: "#666", 

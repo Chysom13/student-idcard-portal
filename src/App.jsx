@@ -85,7 +85,7 @@ function Layout() {
         <Route path="/card/:id" element={<DisplayCard />} />
         <Route path="/capture/:id" element={<CapturePhoto />} />
         <Route path="/admin/dashboard" element={<AdminDashboard onLogout={() => setIsAdminSession(false)} />} />
-        <Route path="/verify/:matricNumber" element={<VerifyStudent />} />
+        <Route path="/verify/:token" element={<VerifyStudent />} />
       </Routes>
 
       {/* Floating Admin FAB — hidden on admin dashboard page */}

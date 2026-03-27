@@ -4,8 +4,8 @@ import { QRCodeSVG } from 'qrcode.react';
 const IdCard = ({ student, enrolledCourses = [], forceSide }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Build the verification URL
-  const verifyUrl = `${window.location.origin}/verify/${student.matric_number}`;
+  // Build the verification URL using the unguessable student UUID
+  const verifyUrl = `${window.location.origin}/verify/${student.id}`;
   const currentYear = new Date().getFullYear() + 1;
 
 
