@@ -725,6 +725,7 @@ form .error {
 .error-icon {
   font-size: 48px;
   margin-bottom: 20px;
+  margin: 10% auto;
 }
 
 .back-btn {
