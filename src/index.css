@@ -1,0 +1,756 @@
+* {
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+
+:root {
+  --primary: #12bca2;
+  --secondary: #6d15df;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  color: #333;
+  font-family: 'Poppins';
+  background: #f2f2f2;
+}
+
+
+nav a {
+  color: #f2f2f2;
+  margin: 10px;
+  display: inline-block;
+}
+
+nav h1 {
+  color: #fff;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 15px;
+    margin: 10px auto;
+  }
+}
+
+/* Responsive Navigation */
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  transition: all 0.3s ease;
+  border-radius: 0 0 2rem 2rem;
+}
+
+@media (max-width: 600px) {
+  .main-nav {
+    flex-direction: column;
+    padding: 20px 15px;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .main-nav h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ID Card Responsive Wrapper */
+.id-card-responsive-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 20px 0;
+  position: relative;
+  /* height: min-content; */
+}
+
+.id-card-scaler {
+  transform-origin: center top;
+  transition: transform 0.2s ease-out;
+  position: absolute;
+  /* bottom: -50%; */
+}
+
+@media (max-width: 580px) {
+  .id-card-scaler {
+    transform: scale(0.65);
+
+  }
+
+
+  .id-card-responsive-wrapper {
+    height: min-content;
+    /* Approximate scaled height to prevent gap */
+  }
+}
+
+@media (max-width: 400px) {
+  .id-card-scaler {
+    transform: scale(0.55);
+  }
+
+  .id-card-responsive-wrapper {
+    height: min-content;
+  }
+}
+
+.smoothie-grid {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.smoothie-card {
+  width: 100%;
+  padding: 10px;
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 6px;
+  position: relative;
+  min-height: 15rem;
+}
+
+.smoothie-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.smoothie-card .rating {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: var(--secondary);
+  color: #fff;
+  border-radius: 6px;
+  width: 40px;
+  height: 0;
+  padding: 10px 0 35px 0;
+  line-height: 0px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.smoothie-card .rating:hover {
+  transition: ease-in-out .5s;
+  color: var(--primary);
+}
+
+.smoothie-card .delete {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: red;
+  color: #fff;
+  border-radius: 6px;
+  width: 40px;
+  height: 0;
+  padding: 10px 0 35px 0;
+  line-height: 0px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.smoothie-card .delete:hover {
+  transition: .5s ease-in-out;
+  background-color: #fff;
+  color: red;
+}
+
+.smoothie-card .home-card-details {
+  /* border: 1px solid red; */
+  display: flex;
+}
+
+.smoothie-card .home-card-details .details {
+  padding: 10px;
+}
+
+.smoothie-card .barcode {
+  position: absolute;
+  bottom: 0;
+}
+
+form {
+  background-color: #fff;
+  padding: 20px;
+  max-width: 480px;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+form input,
+form textarea {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  margin: 10px 0 20px 0;
+}
+
+form button {
+  background-color: var(--primary);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: "Poppins";
+  cursor: pointer;
+}
+
+form .error {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.order-by button {
+  margin-right: 10px;
+  background-color: var(--primary);
+  color: #fff;
+  border: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: 'Poppins';
+  cursor: pointer;
+}
+
+.student-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+/* .id-container{  
+  width: 50rem;
+  height: 32rem;
+  margin: 10%  auto;
+  border-radius: 15px;
+  background-color: black;
+  color: white;
+}
+
+.id-card-title{
+  text-align: center;
+  width: 100%;
+  margin-top: 1rem;
+  background-color: white;
+  color: black;
+  border-radius: 15px 15px 0 0;
+  padding: 1rem 0;
+}
+
+.id-card-dis{
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  line-height: 3rem;
+}
+
+.id-card-dis .img{
+  display: block;
+  width: 325px;
+  height: 100%;
+
+}
+
+.id-card-dis .id-hero-right{
+  width: 100%;
+} */
+
+/* Physical ID Card Layout (Horizontal) */
+.id-card-scene {
+  perspective: 1200px;
+  width: 540px;
+  height: 340px;
+  margin: 0 auto;
+  container-type: inline-size;
+  container-name: card;
+}
+
+.id-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+  cursor: pointer;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.id-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.id-card-container,
+.id-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(133, 217, 243, 0.84), rgba(255, 255, 255, 0.625));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  isolation: isolate;
+}
+
+.id-card-back {
+  transform: rotateY(180deg);
+  background: white;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}
+
+/* Repeated MTU Text Background */
+.id-card-bg-pattern {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: -1;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='60' font-family='Poppins' font-size='32' font-weight='800' fill='%236d15df' transform='rotate(-45 60 60)'%3EMTU%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  opacity: 0.35;
+  /* Acts as the watermark transparency rather than a complex linear gradient */
+}
+
+/* Header */
+.id-card-header {
+  background-color: var(--primary);
+  color: #ffffff;
+  text-align: center;
+  padding: 10px;
+  border-bottom: 4px solid var(--secondary);
+  z-index: 2;
+}
+
+.id-card-header h2 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: normal;
+  /* Fix for canvas overlap */
+}
+
+.id-card-header p {
+  font-size: 12px;
+  margin: 2px 0 0;
+  font-weight: 500;
+  letter-spacing: normal;
+  /* Fix for canvas overlap */
+  opacity: 0.9;
+}
+
+/* Body (Horizontal Flex) */
+.id-card-body {
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  z-index: 2;
+  gap: 15px;
+  align-items: center;
+  /* Center vertically for better alignment */
+}
+
+/* Left Side: Photo */
+.id-card-left {
+  flex: 0 0 130px;
+  /* Fixed width for stability in PDF */
+}
+
+.id-card-photo-wrapper {
+  width: 130px;
+  height: 150px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.id-card-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Right Side: Details & Barcode */
+.id-card-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.id-card-details {
+  width: 100%;
+  padding: 0;
+}
+
+.id-detail-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 13px;
+  /* Fixed px for PDF stability */
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+  padding-bottom: 2px;
+  width: 100%;
+}
+
+.id-label {
+  flex: 0 0 40%;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.id-value {
+  flex: 1;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: right;
+  word-wrap: break-word;
+}
+
+.name-value {
+  font-weight: 800;
+  font-size: 16px;
+  /* Fixed px */
+  color: var(--secondary);
+  line-height: 1.2;
+}
+
+/* Footer & Barcode */
+.id-card-footer {
+  padding: 10px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.id-card-validity p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #d32f2f;
+  text-transform: uppercase;
+}
+
+/* Print Overrides */
+@media print {
+  body {
+    background: white;
+  }
+
+  .page {
+    margin: 0;
+    padding: 0;
+  }
+
+  .id-card-container {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+
+  .id-card-inner {
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .id-card-back {
+    border: 1px solid #ccc !important;
+  }
+
+  .id-card-bg-pattern {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  button,
+  .id-card-notice {
+    display: none !important;
+  }
+}
+
+/* Verification Portal Styles */
+.verify-page {
+  min-height: 100vh;
+  background: linear-gradient(rgba(18, 188, 162, 0.05), rgba(109, 21, 223, 0.05));
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.verify-container {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  border-top: 8px solid var(--primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.verify-header {
+  padding: 30px;
+  text-align: center;
+  background-color: #fff;
+  border-bottom: 2px dashed #eee;
+}
+
+.university-logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--secondary);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.verify-header h1 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.status-badge {
+  display: inline-block;
+  background-color: #38a169;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.verify-profile {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.verify-photo-wrapper {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--primary);
+  box-shadow: 0 8px 16px rgba(18, 188, 162, 0.2);
+}
+
+.verify-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verify-info {
+  text-align: center;
+}
+
+.student-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--secondary);
+}
+
+.matric-sub {
+  font-size: 15px;
+  color: #666;
+  font-weight: 600;
+}
+
+.verify-details {
+  padding: 0 30px 30px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.detail-item label {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.detail-item span {
+  display: block;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.verify-courses {
+  padding: 0 30px 30px;
+}
+
+.verify-courses h3 {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.course-table-wrapper {
+  overflow-x: auto;
+}
+
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.course-table th {
+  text-align: left;
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.course-table td {
+  padding: 8px;
+  font-size: 12px;
+  color: #475569;
+  border-bottom: 1px solid #f8f8f8;
+}
+
+.course-table tfoot td {
+  font-weight: 700;
+  padding-top: 15px;
+  color: var(--secondary);
+}
+
+.verify-footer {
+  padding: 30px;
+  background-color: #f8fafc;
+  text-align: center;
+  position: relative;
+}
+
+.security-note {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.seal-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  font-size: 28px;
+  font-weight: 900;
+  color: rgba(18, 188, 162, 0.05);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.verify-container.loading {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 10% auto;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.verify-container.error {
+  padding: 60px;
+  text-align: center;
+  margin: 10% auto;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-top: 20px;
+  background: var(--primary);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+}
