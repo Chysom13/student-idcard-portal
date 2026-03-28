@@ -14,9 +14,9 @@ const DisplayCard = () => {
   const [printingStatus, setPrintingStatus] = useState("")
   const { toPDF, targetRef } = usePDF({ 
     filename: 'MTU-Identity-Card.pdf',
-    page: { format: [85.6, 54], orientation: 'landscape', margin: 0 },
+    page: { format: [85.6, 54], orientation: 'portrait', margin: 10 },
     canvas: { 
-      scale: 2, 
+      scale: 4, 
       useCORS: true, 
       width: 540,
       windowWidth: 540
