@@ -341,13 +341,12 @@ form .error {
   left: -50%;
   width: 200%;
   height: 200%;
-  z-index: -1;
+  z-index: 1; /* Positive index for screenshot engine visibility */
   background-image:
     url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='10' y='60' font-family='Poppins' font-size='32' font-weight='800' fill='%236d15df' transform='rotate(-45 60 60)'%3EMTU%3C/text%3E%3C/svg%3E");
   background-repeat: repeat;
   pointer-events: none;
-  opacity: 0.35;
-  /* Acts as the watermark transparency rather than a complex linear gradient */
+  opacity: 0.45; /* Slightly increased for better capture */
 }
 
 /* Header */
@@ -357,7 +356,8 @@ form .error {
   text-align: center;
   padding: 10px;
   border-bottom: 4px solid var(--secondary);
-  z-index: 2;
+  z-index: 10; /* Above watermark */
+  position: relative;
 }
 
 .id-card-header h2 {
@@ -384,7 +384,7 @@ form .error {
   display: flex;
   flex-direction: row;
   position: relative;
-  z-index: 2;
+  z-index: 10; /* Above watermark */
   gap: 15px;
   align-items: center;
   /* Center vertically for better alignment */

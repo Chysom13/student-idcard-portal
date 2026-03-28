@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom"
 import supabase from "../services/supabase"
 import IdCard from "../components/IdCard"
 import { usePDF } from 'react-to-pdf'
+// import html2canvas from 'html2canvas'
 
 const DisplayCard = () => {
   const { id } = useParams()
@@ -119,6 +120,12 @@ const DisplayCard = () => {
     }
   }
 
+/*
+  const handleSaveImage = async () => {
+    ... (omitted)
+  }
+*/
+
   const handlePayFine = async () => {
     setPrintingStatus("Unlocking Print...")
 
@@ -225,23 +232,34 @@ const DisplayCard = () => {
             </button>
           </div>
         ) : (
-          <button
-            onClick={handlePrint}
-            disabled={!!printingStatus && printingStatus !== "Failed to generate PDF."}
-            style={{
-              padding: "12px 24px",
-              fontSize: "16px",
-              cursor: "pointer",
-              borderRadius: "8px",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              fontWeight: "bold",
-              width: "100%"
-            }}
-          >
-            {printingStatus || (card.print_count === 0 ? "Download Free ID Card" : "Download Reprint")}
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <button
+              onClick={handlePrint}
+              disabled={!!printingStatus && !printingStatus.includes("Failed")}
+              style={{
+                padding: "12px 24px",
+                fontSize: "16px",
+                cursor: "pointer",
+                borderRadius: "8px",
+                backgroundColor: "#28a745",
+                color: "white",
+                border: "none",
+                fontWeight: "bold",
+                width: "100%"
+              }}
+            >
+              {printingStatus === "Generating PDF..." ? "Generating..." : (card.print_count === 0 ? "Download PDF ID" : "Download PDF Reprint")}
+            </button>
+
+            {/* 
+            <button
+              onClick={handleSaveImage}
+              ...
+            >
+              Download as Image
+            </button>
+            */}
+          </div>
         )}
 
         {/* Temporary Preview Button for Development */}
