@@ -9,6 +9,12 @@ const DisplayCard = () => {
   const { id } = useParams()
   const navigate = useNavigate()
 
+  // Read admin settings and initialize barcode preference
+  const isAdmin = sessionStorage.getItem("admin_session") === "true"
+  const [barcodeType, setBarcodeType] = useState(() => {
+    return localStorage.getItem('admin_barcode_preference') || 'qr'
+  })
+
   const [card, setCard] = useState(null)
   const [enrolledCourses, setEnrolledCourses] = useState([])
   const [loading, setLoading] = useState(true)
@@ -184,7 +190,7 @@ const DisplayCard = () => {
           {/* The Interactive 3D Card (Not printed) */}
           <div style={{ padding: "20px", background: "white", borderRadius: "8px" }}>
             <div className="student-card">
-              <IdCard student={card} enrolledCourses={enrolledCourses} />
+              <IdCard student={card} enrolledCourses={enrolledCourses} barcodeFormat={barcodeType} />
             </div>
           </div>
 
@@ -192,11 +198,11 @@ const DisplayCard = () => {
           <div style={{ position: "absolute", zIndex: -1000, top: 0, left: 0, opacity: 0, pointerEvents: "none" }}>
             <div ref={targetRef} style={{ background: "white", padding: 0, display: "flex", flexDirection: "column", gap: 0, width: "540px", boxSizing: "border-box" }}>
               <div style={{ width: "540px", height: "340px", overflow: "hidden", margin: 0, padding: 0 }}>
-                <IdCard student={card} enrolledCourses={enrolledCourses} forceSide="front" />
+                <IdCard student={card} enrolledCourses={enrolledCourses} forceSide="front" barcodeFormat={barcodeType} />
               </div>
               <div className="html2pdf__page-break" style={{ height: 0, margin: 0, padding: 0 }}></div>
               <div style={{ width: "540px", height: "340px", overflow: "hidden", margin: 0, padding: 0 }}>
-                <IdCard student={card} enrolledCourses={enrolledCourses} forceSide="back" />
+                <IdCard student={card} enrolledCourses={enrolledCourses} forceSide="back" barcodeFormat={barcodeType} />
               </div>
             </div>
           </div>
@@ -204,6 +210,7 @@ const DisplayCard = () => {
       </div>
 
       <div style={{ marginTop: "2rem", textAlign: "center", width: "100%", maxWidth: "400px" }}>
+        
         {isAtAbsoluteMax ? (
           <div style={{ padding: "20px", backgroundColor: "#fff5f5", color: "#c53030", borderRadius: "12px", border: "1px solid #feb2b2" }}>
             <h4 style={{ margin: "0 0 10px 0" }}>Issuance Exhausted</h4>

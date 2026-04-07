@@ -412,7 +412,7 @@ form .error {
   display: block;
 }
 
-/* Right Side: Details & Barcode */
+/* Right Side: Details */
 .id-card-right {
   flex: 1;
   display: flex;
@@ -430,7 +430,7 @@ form .error {
   margin-bottom: 8px;
   font-size: 13px;
   /* Fixed px for PDF stability */
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+  border-bottom: 1.5px dashed rgb(0, 0, 0);
   padding-bottom: 2px;
   width: 100%;
 }
@@ -440,7 +440,7 @@ form .error {
   font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 15px;
 }
 
 .id-value {

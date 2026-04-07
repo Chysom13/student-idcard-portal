@@ -4,6 +4,7 @@ import supabase from '../services/supabase';
 import GlobalLimitControl from '../components/GlobalLimitControl';
 import ExhaustedStudents from '../components/ExhaustedStudents';
 import StudentMonitor from '../components/StudentMonitor';
+import GlobalFormatControl from '../components/GlobalFormatControl';
 
 const AdminDashboard = ({ onLogout }) => {
     const navigate = useNavigate();
@@ -50,10 +51,10 @@ const AdminDashboard = ({ onLogout }) => {
     const renderMenu = () => (
         <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gridTemplateColumns: '1fr 1fr',
             gap: '24px',
             marginTop: '20px',
-            color: 'white'
+            color: 'white',
         }}>
             {/* Global Limit Control Card */}
             <div 
@@ -134,6 +135,27 @@ const AdminDashboard = ({ onLogout }) => {
                 <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>Student Monitor</h3>
                 <p style={{ margin: 0, fontSize: '14px'}}>Search and view all student print statistics.</p>
             </div>
+
+            {/* ID Format Options Card */}
+            <div 
+                onClick={() => setCurrentView('format')}
+                style={{
+                    background: '#1f2937', 
+                    borderRadius: '16px',
+                    padding: '32px 24px',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    border: '1px solid #374151',
+                    transition: 'transform 0.2s ease, background 0.2s ease',
+                    textAlign: 'center'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.background = '#374151'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#1f2937'}
+            >
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔲</div>
+                <h3 style={{ margin: '0 0 8px', fontSize: '20px' }}>Format Settings</h3>
+                <p style={{ margin: 0, fontSize: '14px'}}>Switch backend identifiers (QR / Barcode).</p>
+            </div>
         </div>
     );
 
@@ -180,6 +202,12 @@ const AdminDashboard = ({ onLogout }) => {
                 {currentView === 'monitor' && (
                     <div style={{ height: '700px' }}>
                         <StudentMonitor refreshTrigger={refreshTrigger} onBack={handleBack} />
+                    </div>
+                )}
+
+                {currentView === 'format' && (
+                    <div style={{ minHeight: '400px' }}>
+                        <GlobalFormatControl onBack={handleBack} />
                     </div>
                 )}
 
