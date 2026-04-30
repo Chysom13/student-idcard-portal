@@ -430,7 +430,7 @@ form .error {
   margin-bottom: 8px;
   font-size: 13px;
   /* Fixed px for PDF stability */
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+  border-bottom: 2px dashed rgba(0, 0, 0, 0.693);
   padding-bottom: 2px;
   width: 100%;
 }
